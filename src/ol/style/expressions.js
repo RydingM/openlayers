@@ -53,6 +53,7 @@ import {asArray, isStringColor} from '../color.js';
  *   * `['==', value1, value2]` returns `true` if `value1` equals `value2`, or `false` otherwise.
  *   * `['!=', value1, value2]` returns `true` if `value1` does not equal `value2`, or `false` otherwise.
  *   * `['!', value1]` returns `false` if `value1` is `true` or greater than `0`, or `true` otherwise.
+ *   * `['&&', value1, value2]` returns `true` if `value1` is `true` and `value2` is `true`, or `false` otherwise.
  *   * `['between', value1, value2, value3]` returns `true` if `value1` is contained between `value2` and `value3`
  *     (inclusively), or `false` otherwise.
  *
@@ -588,6 +589,33 @@ Operators['!'] = {
     assertArgsCount(args, 1);
     assertBoolean(args[0]);
     return `(!${expressionToGlsl(context, args[0])})`;
+  },
+};
+Operators["&&"] = {
+  getReturnType: function (args) {
+    return ValueTypes.BOOLEAN;
+  },
+  toGlsl: function (context, args) {
+    assertArgsCount(args, 2);
+
+    // find common type
+    let type = ValueTypes.ANY;
+    for (let i = 0; i < args.length; i++) {
+      type = type & getValueType(args[i]);
+    }
+    if (type === 0) {
+      throw new Error(
+        `All arguments should be of compatible type, got ${JSON.stringify(
+          args
+        )} instead`
+      );
+    }
+
+    return `(${expressionToGlsl(context, args[0], type)} && ${expressionToGlsl(
+      context,
+      args[1],
+      type
+    )})`;
   },
 };
 Operators['between'] = {
