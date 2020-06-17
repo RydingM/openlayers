@@ -591,7 +591,7 @@ Operators['!'] = {
     return `(!${expressionToGlsl(context, args[0])})`;
   },
 };
-Operators["&&"] = {
+Operators['&&'] = {
   getReturnType: function (args) {
     return ValueTypes.BOOLEAN;
   },
