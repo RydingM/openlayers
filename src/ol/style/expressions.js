@@ -3,7 +3,7 @@
  * @module ol/style/expressions
  */
 
-import {asArray, isStringColor} from '../color.js';
+import { asArray, isStringColor } from '../color.js';
 
 /**
  * Base type used for literal style parameters; can be a number literal or the output of an operator,
@@ -259,7 +259,7 @@ export function expressionToGlsl(context, value, typeHint) {
     }
     return operator.toGlsl(context, value.slice(1), typeHint);
   } else if ((getValueType(value) & ValueTypes.NUMBER) > 0) {
-    return numberToGlsl(/** @type {number} */ (value));
+    return numberToGlsl(/** @type {number} */(value));
   } else if ((getValueType(value) & ValueTypes.BOOLEAN) > 0) {
     return value.toString();
   } else if (
@@ -271,9 +271,9 @@ export function expressionToGlsl(context, value, typeHint) {
     (getValueType(value) & ValueTypes.COLOR) > 0 &&
     (typeHint === undefined || typeHint == ValueTypes.COLOR)
   ) {
-    return colorToGlsl(/** @type {number[]|string} */ (value));
+    return colorToGlsl(/** @type {number[]|string} */(value));
   } else if ((getValueType(value) & ValueTypes.NUMBER_ARRAY) > 0) {
-    return arrayToGlsl(/** @type {number[]} */ (value));
+    return arrayToGlsl(/** @type {number[]} */(value));
   }
 }
 
@@ -591,33 +591,24 @@ Operators['!'] = {
     return `(!${expressionToGlsl(context, args[0])})`;
   },
 };
-Operators['&&'] = {
+Operators['and'] = {
   getReturnType: function (args) {
     return ValueTypes.BOOLEAN;
   },
   toGlsl: function (context, args) {
     assertArgsCount(args, 2);
+    for (var i = 0; i < args.length; i++) {
+      assertBoolean(args[i]);
+    };
 
-    // find common type
-    let type = ValueTypes.ANY;
-    for (let i = 0; i < args.length; i++) {
-      type = type & getValueType(args[i]);
-    }
-    if (type === 0) {
-      throw new Error(
-        `All arguments should be of compatible type, got ${JSON.stringify(
-          args
-        )} instead`
-      );
-    }
-
-    return `(${expressionToGlsl(context, args[0], type)} && ${expressionToGlsl(
+    return `(${expressionToGlsl(context, args[0])} && ${expressionToGlsl(
       context,
-      args[1],
-      type
+      args[1]
     )})`;
   },
 };
+Operators['any'] = getEqualOperator('||');
+
 Operators['between'] = {
   getReturnType: function (args) {
     return ValueTypes.BOOLEAN;
@@ -715,9 +706,9 @@ Operators['interpolate'] = {
       const output2 = expressionToGlsl(context, args[i + 3], outputType);
       result = `mix(${
         result || output1
-      }, ${output2}, pow(clamp((${input} - ${stop1}) / (${stop2} - ${stop1}), 0.0, 1.0), ${numberToGlsl(
-        interpolation
-      )}))`;
+        }, ${output2}, pow(clamp((${input} - ${stop1}) / (${stop2} - ${stop1}), 0.0, 1.0), ${numberToGlsl(
+          interpolation
+        )}))`;
     }
     return result;
   },

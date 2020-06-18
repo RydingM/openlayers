@@ -179,6 +179,12 @@ describe('ol.style.expressions', function () {
       expect(getValueType(['!=', 10, ['get', 'attr4']])).to.eql(
         ValueTypes.BOOLEAN
       );
+      expect(getValueType(['and', 10, ['get', 'attr4']])).to.eql(
+        ValueTypes.BOOLEAN
+      );
+      expect(getValueType(['any', 10, ['get', 'attr4']])).to.eql(
+        ValueTypes.BOOLEAN
+      );
       expect(getValueType(['between', ['get', 'attr4'], -4.0, 5.0])).to.eql(
         ValueTypes.BOOLEAN
       );
@@ -240,6 +246,12 @@ describe('ol.style.expressions', function () {
       );
       expect(expressionToGlsl(context, ['==', 10, ['get', 'attr4']])).to.eql(
         '(10.0 == a_attr4)'
+      );
+      expect(expressionToGlsl(context, ['and', true, ['get', 'attr4']])).to.eql(
+        '(true && a_attr4)'
+      );
+      expect(expressionToGlsl(context, ['any', 10, ['get', 'attr4']])).to.eql(
+        '(10.0 || a_attr4)'
       );
       expect(expressionToGlsl(context, ['!=', 10, ['get', 'attr4']])).to.eql(
         '(10.0 != a_attr4)'
