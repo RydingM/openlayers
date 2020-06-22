@@ -179,7 +179,7 @@ describe('ol.style.expressions', function () {
       expect(getValueType(['!=', 10, ['get', 'attr4']])).to.eql(
         ValueTypes.BOOLEAN
       );
-      expect(getValueType(['and', 10, ['get', 'attr4']])).to.eql(
+      expect(getValueType(['and', true, ['get', 'attr4']])).to.eql(
         ValueTypes.BOOLEAN
       );
       expect(getValueType(['any', 10, ['get', 'attr4']])).to.eql(
@@ -308,6 +308,22 @@ describe('ol.style.expressions', function () {
 
       thrown = false;
       try {
+        expressionToGlsl(context, ['any', ['var', true], ['get', true], true]);
+      } catch (e) {
+        thrown = true;
+      }
+      expect(thrown).to.be(true);
+
+      thrown = false;
+      try {
+        expressionToGlsl(context, ['and', ['var', true], ['get', true], true]);
+      } catch (e) {
+        thrown = true;
+      }
+      expect(thrown).to.be(true);
+
+      thrown = false;
+      try {
         expressionToGlsl(context, ['<', 0, 'aa']);
       } catch (e) {
         thrown = true;
@@ -343,6 +359,22 @@ describe('ol.style.expressions', function () {
       let thrown = false;
       try {
         expressionToGlsl(context, ['var', 1234, 456]);
+      } catch (e) {
+        thrown = true;
+      }
+      expect(thrown).to.be(true);
+
+      thrown = false;
+      try {
+        expressionToGlsl(context, ['any', ['var', true], ['get', true], true]);
+      } catch (e) {
+        thrown = true;
+      }
+      expect(thrown).to.be(true);
+
+      thrown = false;
+      try {
+        expressionToGlsl(context, ['and', ['var', true], ['get', true], true]);
       } catch (e) {
         thrown = true;
       }
